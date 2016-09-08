@@ -5,39 +5,55 @@ title: Are men talking too much?
 
 
 <body>
-  <div class="content">
-      <div class="row-fluid">
+  <input type="checkbox" id="fullscreen_mode" role="button">
 
+  <div id="normal_mode_content" class="col-sm-8 col-sm-offset-2 center">
+    <br/>
+    <h3><span class="highlight"><i>check who's dominating the conversation</i></span></h3>
+    <br/>
 
-          <div class="col-sm-8 col-sm-offset-2 center">
-            <br/>
-            <h3><span class="highlight"><i>check who's dominating the conversation</i></span></h3>
-            <br/>
+    <h1>who's talking?</h1>
+    <p id="ans" class="ans">&nbsp;</p>
 
-            <h1>who's talking?</h1>
-            <p id="ans">&nbsp;</p>
-
-            <div class="row-fluid" id="button-div">
-              <div class="col-xs-6">
-                <a class="btn btn-lg btn-default" id="dude">a dude</a>
-                <p id="dude-display">00:00</p>
-              </div>
-              <div class="col-xs-6">
-                <a class="btn btn-lg btn-default" id="not-dude">not a dude</a>
-                <p id="not-dude-display">00:00</p>
-              </div>
-            </div>
-            <div class="clearfix"></div>
-
-            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
-            <p class="small"><a class="muted-link" href="https://github.com/cathydeng/are-men-talking-too-much">made with ♡ by Cathy Deng</a></p>
-
-
-          </div>
+    <div class="row-fluid" id="button-div">
+      <div class="col-xs-6">
+        <a class="btn btn-lg btn-default dude" id="dude">a dude</a>
+        <p id="dude-display" class="dude-display">00:00</p>
       </div>
+      <div class="col-xs-6">
+        <a class="btn btn-lg btn-default not-dude" id="not-dude">not a dude</a>
+        <p id="not-dude-display" class="not-dude-display">00:00</p>
+      </div>
+    </div>
+    <div class="clearfix"></div>
   </div>
 
-  </body>
+  <div id="fullscreen_mode_content">
+
+
+    <div id="full_dude" class="dude">
+      <p id="full_dude-display" class="dude-display">00:00</p>
+    </div>
+    <div id="full_not-dude" class="not-dude">
+      <p id="full_not-dude-display" class="not-dude-display">00:00</p>
+    </div>
+    <div id="full_header">
+      <h3><i>check who's dominating the conversation</i></h3>
+      <br/>
+
+      <h1>who's talking?</h1>
+
+      <p id="full_ans" class="ans">&nbsp;</p>
+    </div>
+  </div>
+
+  <footer>
+    <label for="fullscreen_mode">
+      Toggle fullscreen mode
+    </label>
+
+    <p class="small"><a class="muted-link" href="https://github.com/cathydeng/are-men-talking-too-much">made with ♡ by Cathy Deng</a></p>
+  </footer>
 
   <script type="text/javascript">
     $(function() {
@@ -49,7 +65,8 @@ title: Are men talking too much?
           seconds: 0,
           hours: 0
         },
-        active: false
+        active: false,
+        interval: null
       };
 
       var not_dude = {
@@ -58,15 +75,18 @@ title: Are men talking too much?
           seconds: 0,
           hours: 0
         },
-        active: false
+        active: false,
+        interval: null
       };
 
       var dude_t;
       var not_dude_t;
 
-      var $ans = $('#ans');
-      var $dude = $('#dude');
-      var $not_dude = $('#not-dude');
+      var $ans = $('.ans');
+      console.log($ans);
+      var $dude = $('.dude');
+      console.log($dude);
+      var $not_dude = $('.not-dude');
 
       function num_pad(num) {
         if (num < 10) {
@@ -76,7 +96,8 @@ title: Are men talking too much?
         }
       }
 
-      function add(tally, display_sel) {
+      function add(tally, display_sel, ans) {
+        console.log(display_sel);
         tally.seconds++;
         if (tally.seconds >= 60) {
           tally.minutes++;
@@ -96,31 +117,41 @@ title: Are men talking too much?
         var d_tot = (dude.time.hours * 3600) + (dude.time.minutes * 60) + dude.time.seconds;
         var l_tot = (not_dude.time.hours * 3600) + (not_dude.time.minutes * 60) + not_dude.time.seconds;
         var pct = parseInt(d_tot / (d_tot + l_tot) * 100, 10);
-        $ans.html('<span id="pct">' + pct + '</span>% men');
+        ans.html('<span id="pct">' + pct + '</span>% men');
+        console.log(pct);
       }
 
-      $dude.click(function() {
+      function registerType(active_elem, inactive_elem, active_data, inactive_data, active_display, ans) {
+          active_elem.click(function() {
 
-        $dude.toggleClass('pressed');
+            //active_elem.toggleClass('pressed');
 
-        if (dude.active === true) {
-          dude.active = false;
-          clearInterval(dude_t);
-        } else {
-          dude.active = true;
-          if (not_dude.active === true) {
-            $not_dude.toggleClass('pressed');
-            not_dude.active = false;
-            clearInterval(not_dude_t);
-          }
-          dude_t = setInterval(function() {
-            add(dude.time, '#dude-display');
-          }, 1000);
-        }
+              active_elem.toggleClass('pressed');
 
-      });
+            if (active_data.active === true) {
+              active_data.active = false;
+              clearInterval(active_data.interval);
+            } else {
+              active_data.active = true;
+              if (inactive_data.active === true) {
+                inactive_elem.toggleClass('pressed');
+                //inactive_elem.toggleClass('pressed');
+                inactive_data.active = false;
+                clearInterval(inactive_data.interval);
+              }
+              active_data.interval = setInterval(function() {
+                add(active_data.time, active_display, ans);
+              }, 1000);
+            }
+        });
+      }
 
-      $not_dude.click(function() {
+
+      registerType($dude, $not_dude, dude, not_dude, ".dude-display", $ans);
+
+      registerType($not_dude, $dude, not_dude, dude, ".not-dude-display", $ans);
+
+      /*$not_dude.click(function() {
 
         $not_dude.toggleClass('pressed');
 
@@ -138,13 +169,13 @@ title: Are men talking too much?
             add(not_dude.time, '#not-dude-display');
           }, 1000);
         }
-      });
+      });*/
 
       $('body').keydown(function(e) {
         if (e.keyCode === 37) { // left
-          $dude.trigger('click');
+          $($dude[0]).trigger('click');
         } else if (e.keyCode === 39) { //right
-          $not_dude.trigger('click');
+          $($not_dude[0]).trigger('click');
         }
       });
 
