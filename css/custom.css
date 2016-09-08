@@ -103,34 +103,38 @@ input[type=checkbox]:checked ~ #normal_mode_content {
 	color: #000;
 }
 
-#full_dude {
-	right: 50%;
-}
-
-#full_not-dude {
-    left: 50%;
-}
-
 #full_dude.pressed, #full_not-dude.pressed {
 	background-color: black;
 	color: white;
 }
 
+
 #full_dude-display, #full_not-dude-display {
-	font-size: 10vw;
+	font-size: var(--large_font_size);
 	font-family: "Courier", sans-serif;
 	text-align: center;
-
-	padding-top: 33%;
 }
 
-
 #full_ans {
-	font-size: 10vw;
+	font-size: var(--large_font_size);
 	font-family: "Courier", sans-serif;
-	color: #ffffff;
-	
+	color: #fff;
+	mix-blend-mode: exclusion;
+}
 
+#full_ans_container {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	
+	display:flex;
+	justify-content:center;
+	align-items:center;
+	text-align:center;
+	flex-direction: column;
+	pointer-events: none;
 }
 
 #full_header, footer>label {
@@ -154,4 +158,44 @@ footer {
 	bottom: 0;
 	left: 0;
 	right: 0;
+}
+
+@media screen and (orientation: landscape) {
+	#full_dude {
+		right: 50%;
+	}
+
+	#full_not-dude {
+	    left: 50%;
+	}
+
+	#full_dude-display, #full_not-dude-display {
+		padding-top: 33%;
+	}
+
+	:root {
+		--large_font_size: 10vw;
+	}
+
+	#full_ans_container {
+		bottom: 33%;
+	}
+}
+
+@media screen and (orientation: portrait) {
+    #full_dude {
+		bottom: 50%;
+	}
+
+	#full_not-dude {
+	    top: 50%;
+	}
+
+	:root {
+		--large_font_size: 10vh;
+	}
+
+	#full_ans_container {
+		top: 0;
+	}
 }
